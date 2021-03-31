@@ -122,9 +122,9 @@ USE_TZ = True
 
 STATIC_URL = 'https://github.com/xxristoskk/curation-station-2/tree/main/bandmapV2/static'
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'bandmapV2/static')
-]
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, 'bandmapV2/static')
+# ]
 
 STATIC_ROOT = os.path.join(BASE_DIR,'bandmapV2/static')
 
