@@ -32,7 +32,7 @@ class Profile(models.Model):
     spotify_username = models.CharField(max_length=100, null=True, blank=True)
     spotify_token = models.CharField(max_length=150, null=True, blank=True)
     spotify_refresh = models.CharField(max_length=150, null=True, blank=True)
-    token_exp = models.IntegerField(null=True)
+    token_exp = models.IntegerField(null=True, blank=True)
     sp_playlist_name = models.CharField(max_length=100, null=True, blank=True)
     location = models.CharField(max_length=100, null=True, blank=True)
 
