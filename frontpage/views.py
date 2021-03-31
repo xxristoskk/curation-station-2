@@ -118,7 +118,7 @@ from spotipy.oauth2 import SpotifyOAuth
 oauth = SpotifyOAuth(
     client_id=client_id,
     client_secret=client_secret,
-    redirect_uri='http://localhost:8080/',
+    redirect_uri='https://curation-station-2.herokuapp.com/dashboard/',
     scope=scope
 )
 

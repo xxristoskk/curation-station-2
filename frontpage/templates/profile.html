@@ -44,7 +44,7 @@
         {% if request.user.spotify_username == '' %}
             <a href={% url 'get-auth-url'%} class='btn waves-effect disabled indigo accent-2'>Authorize Spotify</a>
         {% else %}
-            <a href={% url 'get-auth-url'%} class='btn waves-effect indigo accent-2'>Authorize Spotify</a>
+            <a href={% url 'get-auth-url' %} class='btn waves-effect indigo accent-2'>Authorize Spotify</a>
         {% endif %}
     </div>
 </form>
