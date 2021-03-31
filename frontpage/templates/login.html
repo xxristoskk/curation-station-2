@@ -1,0 +1,47 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+<style type='text/css'>
+    input, textarea {color: rgba(255, 255, 255, 0.7);}
+    body {}
+</style>
+
+<div class='valign-wrapper container'> 
+    <div class="row" style='padding-top: 50px; padding-bottom: 50px'>
+        <div class="col s12 center">
+            <div class="card horizontal grey darken-4 center">
+                <div class="card-content indigo-text accent-1">
+                    <span class="card-title"><h3><b>LOGIN</b></h3></span>
+                    
+                        <form method="POST" action=''>
+                            {% csrf_token %}
+
+                            <div class="input-field">
+                                <input type="text" class="validate" name='username'>
+                                <label class='active' for="username">Username</label>
+                            </div>
+
+                            <div class='input-field' name='password'>
+                                <input type='password' class='validate' name='password'>
+                                <label class='active' for='password'>Password</label>
+                            </div>
+
+                            <div class="card-action">
+                                <button class="btn waves-effect indigo accent-2" type="submit" value="Login">
+                                Login
+                                </button>
+                            </div>
+                        </form>
+
+                        {% for message in messages %}
+                            <span class='helper-text white' data-success='right'>{{message}}</span>
+                        {% endfor %}
+                            <div class='card-action'>
+                                Already have an account? <a href={% url 'register' %}>Sign Up</a>
+                            </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'base_generic.html' %}
+{% block content %}
+
+<script src='https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.css' rel='stylesheet' />
+
+<div class='container'>
+    <div class='row' style='padding-top: 20px;'>
+        <div class='col s6 offset-s3 center'>
+            <form method='POST' action=''>
+                <div class='input-field'>
+                    {% csrf_token %}
+                    {{form.country_region}}
+                    <label class='active' for='map'>Map</label>
+                </div>
+                <button class="btn waves-effect waves-light indigo accent-2" type="submit" name="Make Map">
+                    Make Map
+                </button>
+            </div>
+        </div>
+    </div>
+        <div class='col s4'>
+            <div id='map' style='width: 800px; height: 550px;'></div>
+        </div>
+    </div>
+</div>
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoieHJpc3Rvc2siLCJhIjoiY2s3cXdhMGR5MDgxdjNlbXZjaGdkczNkcCJ9.Fu-hNW-oYVvXmSxbmbVjQA';
+var map = new mapboxgl.Map({
+    container: 'map', // container ID
+    style: 'mapbox://styles/mapbox/streets-v11', // style URL
+    center: {{center}}, // starting position [lng, lat]
+    zoom: 9 // starting zoom
+});
+</script>
+{% endblock %}

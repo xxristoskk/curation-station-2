@@ -1,0 +1,19 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+{% block content %}
+
+<div class='center white-text'>
+    <p>Welcome to CurationStation! This project is meant to help people discover music outside of the Spotify algorithm, and make it easier to support artists more directly 
+    on <a href='https://bandcamp.com'>Bandcamp</a>. At this point in development, users can create/add to a Spotify playlist of their recent purchases on Bandcamp,
+    along with creating a list of Bandcamp links to purchase music from artists on your current Spotify playlists.</p>
+
+    <p>In the future, users will be able to create maps of Bandcamp artists and talk with other music lovers.</p>
+
+    <div class='row'>
+        <a class='btn waves-red indigo accent-2' href={% url 'login' %}>LOGIN</a>
+        <a class='btn waves-red indigo accent-2' href={% url 'register' %}>SIGNUP</a>
+    </div>
+    <p>----------insert contact form------------</p>
+</div>
+
+{% endblock %}
