@@ -25,6 +25,7 @@ scope = 'playlist-modify-public'
 client_id = os.environ['SPOTIFY_ID']
 client_secret = os.environ['SPOTIFY_SECRET']
 
+
 ## user login & creation
 def register(request):
     if request.user.is_authenticated:
