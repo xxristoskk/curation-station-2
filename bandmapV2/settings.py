@@ -58,7 +58,7 @@ ROOT_URLCONF = 'bandmapV2.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['frontpage/templates/'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
