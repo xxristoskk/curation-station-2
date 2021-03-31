@@ -26,7 +26,7 @@ SECRET_KEY = os.environ['SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['curation-station-2.herokuapp.com/']
+ALLOWED_HOSTS = ['https://curation-station-2.herokuapp.com/, https://github.com/xxristoskk/curation-station-2/tree/main/bandmapV2/static/']
 
 
 # Application definition
