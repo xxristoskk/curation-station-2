@@ -124,7 +124,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = 'https://github.com/xxristoskk/curation-station-2/tree/main/bandmapV2/static/'
+# STATIC_URL = 'https://github.com/xxristoskk/curation-station-2/tree/main/bandmapV2/static/'
 
 # STATICFILES_DIRS = [
 #     os.path.join(BASE_DIR, 'bandmapV2/static')
