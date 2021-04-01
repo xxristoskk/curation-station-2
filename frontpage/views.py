@@ -1,5 +1,4 @@
 from django.shortcuts import render, redirect
-from django.views import generic
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, authenticate, logout
@@ -122,11 +121,18 @@ oauth = SpotifyOAuth(
     scope=scope
 )
 
-@login_required(login_url='login')
-def get_auth_url(request):
+
+class AuthURL(APIView):
+    def get(self, request):
+        auth_url = oauth.get_authorize_url()
+        return Response({'url': auth_url}, status=status.HTTP_200_OK)
+
+
+def callback(request):
     user = request.user
 
-    if user.profile.bandcamp_username != '' and user.profile.spotify_username != '':
+    #check to see if the user has their profile filled
+    if user.profile.spotify_username != '':
 
         auth_url = oauth.get_authorize_url()
         response = Response({'url': auth_url}, status=status.HTTP_200_OK)
@@ -138,7 +144,6 @@ def get_auth_url(request):
         user.profile.spotify_refresh = token_info['refresh_token']
         user.profile.save(update_fields=['spotify_token','spotify_refresh','token_exp'])
 
-        messages.success(request, 'Spotify is authenicated')
         return redirect('dashboard')
 
 @login_required(login_url='login')
