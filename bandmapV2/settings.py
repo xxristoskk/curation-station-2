@@ -35,6 +35,7 @@ ALLOWED_HOSTS = ['curation-station-2.herokuapp.com']
 
 INSTALLED_APPS = [
     # 'whitenoise.runserver_nostatic',
+    'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
