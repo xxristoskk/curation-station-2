@@ -15,6 +15,8 @@ import os
 
 mongodb_pw = os.environ['MONGODB_PW']
 mongodb_user = os.environ['MONGODB_USER']
+
+
 client = pymongo.MongoClient(f'mongodb+srv://{mongodb_user}:{mongodb_pw}@bc01-muwwi.gcp.mongodb.net/test?retryWrites=true&w=majority')
 db = client.BC02
 coll = db.artistInfo
@@ -23,7 +25,6 @@ coll = db.artistInfo
 scope = 'playlist-modify-public'
 client_id = os.environ['SPOTIFY_ID']
 client_secret = os.environ['SPOTIFY_SECRET']
-
 
 ## user login & creation
 def register(request):
