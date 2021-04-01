@@ -98,9 +98,19 @@ def landingpage(request):
 
 @login_required(login_url='login')
 def dashboard(request):
-    context = {}
-    return render(request, 'dashboard.html', context=context)
+    token_exp = request.user.profile.token_exp
+    sp_token = request.user.profile.spotify_token
 
+    now = int(time.time())
+    if not token_exp or not sp_token:
+        is_valid = False
+    elif sp_token or token_exp - now < 60:
+        is_valid = True
+    else:
+        is_valid = False
+
+    context = {'is_valid': is_valid}
+    return render(request, 'dashboard.html', context=context)
 
 
 ''' Spotify auth & user experience '''
@@ -134,10 +144,7 @@ def callback(request):
 
     #check to see if the user has their profile filled
     if user.profile.spotify_username != '':
-
-        auth_url = oauth.get_authorize_url()
-        response = Response({'url': auth_url}, status=status.HTTP_200_OK)
-        code = oauth.parse_response_code(request.GET.get(response))
+        code = oauth.parse_response_code(request.path)
         token_info = oauth.get_access_token(code)
 
         user.profile.spotify_token = token_info['access_token']

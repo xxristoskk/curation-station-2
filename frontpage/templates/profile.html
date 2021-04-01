@@ -38,8 +38,7 @@
         <div>
     </div>
     <div class='row'>
-        <button class="btn waves-effect waves-light indigo accent-2" type="submit" name="Save">Save</button>
-        <button class="btn waves-effect waves-light indigo accent-2" onclick="authSpotify">Authroize Spotify</button>
+        <button class="btn waves-effect waves-light indigo accent-2" onclick="authSpotify()" type="submit" name="Save">Save</button>
     </div>
 </form>
         {% for message in messages %}
@@ -48,14 +47,5 @@
     </div>
 </div>    
 
-<script>
-function authSpotify() {
-    fetch('/get-auth-url')
-        .then((response) => response.json())
-        .then((data) => {
-            window.location.replace(data.url);
-        });
-}
-</script>
 
 {% endblock %}

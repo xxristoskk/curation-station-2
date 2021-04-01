@@ -2,30 +2,17 @@
 {% block content %}
 
 <ul class='collapsible popout'>
+
     {% for doc in bc_info %}
         <li>
-            <div class='collapsible-header'><b>{{doc.artist_name}}</b></div>
-            <div class='collapsible-body'><span><a href={{doc.bc_url}}>{{doc.bc_url}}</a></span></div>
+            <div class='collapsible-header'><h4><b>{{doc.artist_name}}</b></h4></div>
+            <div class='collapsible-body'>
+                <span><p class='white-text'>{{doc.location}}</p></span>
+                <p>
+                <span><a href={{doc.bc_url}} target="_blank">{{doc.bc_url}}</a></span>
+            </div>
         </li>
     {% endfor %}
 </ul>
-
-{% comment %} 
-<table class='white-text striped'>
-    <thead>
-        <tr>
-            <th>Artist Name</th>
-            <th>Bandcamp Link</th>
-        </tr>
-    </thead>
-    <tbody>
-    {% for doc in bc_info %}
-        <tr>
-            <td>{{doc.artist_name}}</td>
-            <td><a href={{doc.bc_url}}>{{doc.bc_url}}</td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table> {% endcomment %}
 
 {% endblock %}
