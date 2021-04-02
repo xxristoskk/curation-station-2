@@ -1,18 +1,20 @@
 {% extends 'base_generic.html' %}
 {% block content %}
 
-<ul class='collapsible popout'>
+<div class='center container'>
+    <ul class='collapsible popout'>
 
-    {% for doc in bc_info %}
-        <li>
-            <div class='collapsible-header'><h4><b>{{doc.artist_name}}</b></h4></div>
-            <div class='collapsible-body'>
-                <span><p class='white-text'>{{doc.location}}</p></span>
-                <p>
-                <span><a href={{doc.bc_url}} target="_blank">{{doc.bc_url}}</a></span>
-            </div>
-        </li>
-    {% endfor %}
-</ul>
-
+        {% for doc in bc_info %}
+            <li>
+                <div class='collapsible-header'><h4 class='center-align'><b>{{doc.artist_name}}</b></h4></div>
+                <div class='collapsible-body'>
+                    <span><p class='white-text'>{{doc.location}}</p></span>
+                    <p>
+                    <span><a href={{doc.bc_url}} target="_blank">{{doc.bc_url}}</a></span>
+                </div>
+            </li>
+        {% endfor %}
+        
+    </ul>
+</div>
 {% endblock %}
