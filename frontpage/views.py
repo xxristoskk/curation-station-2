@@ -125,17 +125,25 @@ from rest_framework.views import APIView
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
+
 # initialize spotify credentials
 oauth = SpotifyOAuth(
     client_id=client_id,
     client_secret=client_secret,
     redirect_uri='https://curation-station-2.herokuapp.com/redirect/',
-    scope=scope
+    scope=scope,
 )
-
 
 class AuthURL(APIView):
     def get(self, request):
+        # initialize spotify credentials
+        oauth = SpotifyOAuth(
+            client_id=client_id,
+            client_secret=client_secret,
+            redirect_uri='https://curation-station-2.herokuapp.com/redirect/',
+            scope=scope,
+            username=request.user.profile.spotify_username
+        )
         auth_url = oauth.get_authorize_url()
         return Response({'url': auth_url}, status=status.HTTP_200_OK)
 
