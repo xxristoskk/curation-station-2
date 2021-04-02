@@ -64,7 +64,7 @@
                 <p>Create a playlist of recent Bandcamp purchases</p>
             </div>
             <div class='card-action'>
-                {% if not is_valid or request.user.profile.bandcamp_username == None %}
+                {% if not is_valid or request.user.profile.bandcamp_username == None or request.user.profile.sp_playlist_name == None %}
                     <a class="waves-effect waves-light btn disabled indigo accent-2" href={% url 'make-playlist' %}>Make Playlist</a>
                 {% else %}
                     <a class="waves-effect waves-light btn indigo accent-2" href={% url 'make-playlist' %}>Make Playlist</a>
