@@ -123,16 +123,37 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 import spotipy
+from spotipy.cache_handler import CacheHandler
 from spotipy.oauth2 import SpotifyOAuth
 
-
-# initialize spotify credentials
-oauth = SpotifyOAuth(
-    client_id=client_id,
-    client_secret=client_secret,
-    redirect_uri='https://curation-station-2.herokuapp.com/redirect/',
-    scope=scope,
-)
+'''
+By default, Spotipy stores tokens in a system cache file. A custom class is needed to make sure Spotipy
+looks in the database for saved token information
+'''
+class CustomCacheHandler(CacheHandler):
+    def __init__(self, user):
+        self.user = user 
+    
+    def get_cached_token(self):
+        token_info = None
+        try:
+            token_info = {
+                'access_token': self.user.profile.spotify_token,
+                'expires_at': self.user.profile.token_exp,
+                'refresh_token': self.user.profile.spotify_refresh
+            }
+        except:
+            print('No token info')
+        return token_info
+    
+    def save_token_to_cache(self, token_info):
+        try:
+            self.user.profile.spotify_token = token_info['access_token']
+            self.user.profile.token_exp = token_info['expires_at']
+            self.user.profile.spotify_refresh = token_info['refresh_token']
+            self.user.profile.save(update_fields=['spotify_token','spotify_refresh','token_exp'])
+        except:
+            print("Couldn't save token info")
 
 class AuthURL(APIView):
     def get(self, request):
@@ -142,7 +163,8 @@ class AuthURL(APIView):
             client_secret=client_secret,
             redirect_uri='https://curation-station-2.herokuapp.com/redirect/',
             scope=scope,
-            username=request.user.profile.spotify_username
+            cache_handler=CustomCacheHandler(request.user),
+            show_dialog=True
         )    
         auth_url = oauth.get_authorize_url()
         return Response({'url': auth_url}, status=status.HTTP_200_OK)
@@ -158,7 +180,8 @@ def callback(request):
             client_secret=client_secret,
             redirect_uri='https://curation-station-2.herokuapp.com/redirect/',
             scope=scope,
-            username=request.user.profile.spotify_username
+            cache_handler=CustomCacheHandler(request.user),
+            show_dialog=True
         )    
         code = oauth.parse_response_code(request.build_absolute_uri())
         token_info = oauth.get_access_token(code)
