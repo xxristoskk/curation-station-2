@@ -143,7 +143,7 @@ class AuthURL(APIView):
             redirect_uri='https://curation-station-2.herokuapp.com/redirect/',
             scope=scope,
             username=request.user.profile.spotify_username
-        )
+        )    
         auth_url = oauth.get_authorize_url()
         return Response({'url': auth_url}, status=status.HTTP_200_OK)
 
@@ -153,6 +153,13 @@ def callback(request):
 
     #check to see if the user has their profile filled
     if user.profile.spotify_username != '':
+        oauth = SpotifyOAuth(
+            client_id=client_id,
+            client_secret=client_secret,
+            redirect_uri='https://curation-station-2.herokuapp.com/redirect/',
+            scope=scope,
+            username=request.user.profile.spotify_username
+        )    
         code = oauth.parse_response_code(request.build_absolute_uri())
         token_info = oauth.get_access_token(code)
 
