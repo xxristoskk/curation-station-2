@@ -145,7 +145,7 @@ def callback(request):
 
     #check to see if the user has their profile filled
     if user.profile.spotify_username != '':
-        code = oauth.parse_response_code(request.path)
+        code = oauth.parse_response_code(request.build_absolute_uri())
         token_info = oauth.get_access_token(code)
 
         user.profile.spotify_token = token_info['access_token']
