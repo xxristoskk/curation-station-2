@@ -25,6 +25,7 @@ coll = db.artistInfo
 scope = 'playlist-modify-public'
 client_id = os.environ['SPOTIFY_ID']
 client_secret = os.environ['SPOTIFY_SECRET']
+redirect_uri = 'https://curation-station-2.herokuapp.com/redirect/'
 
 ## user login & creation
 def register(request):
@@ -161,7 +162,7 @@ class AuthURL(APIView):
         oauth = SpotifyOAuth(
             client_id=client_id,
             client_secret=client_secret,
-            redirect_uri='https://curation-station-2.herokuapp.com/redirect/',
+            redirect_uri=redirect_uri,
             scope=scope,
             cache_handler=CustomCacheHandler(request.user),
             show_dialog=True
@@ -178,7 +179,7 @@ def callback(request):
         oauth = SpotifyOAuth(
             client_id=client_id,
             client_secret=client_secret,
-            redirect_uri='https://curation-station-2.herokuapp.com/redirect/',
+            redirect_uri=redirect_uri,
             scope=scope,
             cache_handler=CustomCacheHandler(request.user),
             show_dialog=True
@@ -203,11 +204,23 @@ def make_playlist(request):
     refresh_token = user.profile.spotify_refresh
     pl_name = user.profile.sp_playlist_name
 
+    oauth = SpotifyOAuth(
+        client_id=client_id,
+        client_secret=client_secret,
+        redirect_uri=redirect_uri,
+        scope=scope,
+        cache_handler=CustomCacheHandler(request.user),
+        show_dialog=True
+    )
+
+    #check if spotify auth token is exprired
     now = int(time.time())
     if sp_token != '' or token_exp - now < 60:
-        sp = spotipy.Spotify(auth=sp_token)
+        token_info = oauth.refresh_access_token(refresh_token)
+        token = token_info['access_token']
+        sp = spotipy.Spotify(auth=token)
     else:
-        sp = spotipy.Spotify(auth=refresh_token)
+        sp = spotipy.Spotify(auth=sp_token)
 
     playlist_maker = MakePlaylist(bc_username, sp_username, sp)
     bc_releases = playlist_maker.get_bc_artists()
@@ -226,11 +239,23 @@ def buy_music(request):
     token_exp = user.profile.token_exp
     refresh_token = user.profile.spotify_refresh
 
+    oauth = SpotifyOAuth(
+        client_id=client_id,
+        client_secret=client_secret,
+        redirect_uri=redirect_uri,
+        scope=scope,
+        cache_handler=CustomCacheHandler(request.user),
+        show_dialog=True
+    )
+    
+    #check if spotify auth token is exprired
     now = int(time.time())
     if sp_token != '' or token_exp - now < 60:
-        sp = spotipy.Spotify(auth=sp_token)
+        token_info = oauth.refresh_access_token(refresh_token)
+        token = token_info['access_token']
+        sp = spotipy.Spotify(auth=token)
     else:
-        sp = spotipy.Spotify(auth=refresh_token)
+        sp = spotipy.Spotify(auth=sp_token)
 
     user_playlists = [x['name'].lower() for x in sp.current_user_playlists()['items']]
     user_playlists = user_playlists[:5]
