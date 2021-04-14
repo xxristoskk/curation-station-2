@@ -1,6 +1,7 @@
 function closeNav() {
     $('#sideFeats').css('width', '0');
     $('#map-container').css('left', '0');
+    $('#topnav').css('display','none');
   }
   
   /*
@@ -119,6 +120,7 @@ map.on('style.load', function() {
       $('#artists').html(artist_html);
       $('#sideFeats').css('width', '300px');
       $('#map-container').css('left', '300px');
+      $('#topnav').css('display','none');
     });
   
     // listen for the mouse moving over the map and react when the cursor is over our data
