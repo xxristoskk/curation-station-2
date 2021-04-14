@@ -102,7 +102,7 @@ map.on('style.load', function() {
   
       var artists = JSON.parse(selectedFeat.properties.artists);
   
-      artist_html = `<h4 class='header white-text'>${selectedFeat.properties.city}</h4><div class='divider'></div><br>`
+      artist_html = `<h4 class='header white-text'>${selectedFeat.properties.city}</h4><div class='divider'></div><a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a><br>`
       builder = (artist) => {
         artist_html += `
         <div class='row valign-wrapper'>
@@ -120,7 +120,6 @@ map.on('style.load', function() {
       $('#artists').html(artist_html);
       $('#sideFeats').css('width', '300px');
       $('#map-container').css('left', '300px');
-      $('#topnav').css('display','none');
     });
   
     // listen for the mouse moving over the map and react when the cursor is over our data
