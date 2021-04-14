@@ -168,6 +168,7 @@ def dashboard(request):
             sp_token = new_token
             refresh_token = token_info['refresh_token']
             request.user.profile.save(update_fields=['spotify_token','spotify_refresh'])
+            is_valid = True
 
     context = {'is_valid': is_valid}
     return render(request, 'dashboard.html', context=context)
