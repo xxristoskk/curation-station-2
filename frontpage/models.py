@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from geopy.geocoders import Nominatim
 
 # Create your models here.
 class Profile(models.Model):
@@ -20,16 +19,6 @@ class Profile(models.Model):
     location = models.CharField(max_length=100, null=True, blank=True)
     latitude = models.FloatField(blank=True, null=True)
     longitude= models.FloatField(blank=True, null=True)
-
-    def save(self, *args, **kwargs):
-        geolocator = Nominatim(user_agent="CurationLab")
-        loc = geolocator.geocode(self.location)
-        if not self.location:
-            return None
-        else:
-            self.latitude = loc.latitude
-            self.longitude = loc.longitude
-            return super(Profile, self).save(*args, **kwargs)
 
 
     def __str__(self):

@@ -111,6 +111,9 @@ def logout_user(request):
     logout(request)
     return redirect('login')
 
+# need to save location coordinates
+from geopy.geocoders import Nominatim
+
 @login_required(login_url='login')
 def profile(request):
     user = request.user
@@ -122,10 +125,21 @@ def profile(request):
             'location': user.profile.location
         },
         instance=user)
+    
     if request.method == 'POST':
         form = ProfileForm(request.POST, instance=user.profile)
         if form.is_valid():
             form.save()
+            location = form.cleaned_data.get('location')
+            geolocator = Nominatim(user_agent="CurationLab")
+            loc = geolocator.geocode(location)
+            
+            if not self.location:
+                return None
+            else:
+                self.latitude = loc.latitude
+                self.longitude = loc.longitude
+
             messages.success(request, 'Profile updated')
             return redirect('dashboard')
 
