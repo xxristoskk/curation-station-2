@@ -101,8 +101,18 @@ map.on('style.load', function() {
       let selectedFeat = e.features[0];
   
       var artists = JSON.parse(selectedFeat.properties.artists);
-  
-      artist_html = `<h4 class='header white-text'>${selectedFeat.properties.city}</h4><div class='divider'></div><a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a><br>`
+
+      artist_html = `
+      <div class='row'>
+        <div class='col s6 left'>
+          <h4 class='header white-text'>${selectedFeat.properties.city}</h4>
+        </div>
+        <div class='col s6 right'>
+          <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        </div>
+      </div>
+      <div class='divider'></div><br>`
+            
       builder = (artist) => {
         artist_html += `
         <div class='row valign-wrapper'>
