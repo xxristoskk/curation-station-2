@@ -24,6 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ['SECRET_KEY']
 
 
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
@@ -148,9 +149,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, 'bandmapV2/static')
-# ]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'bandmapV2/static')
+]
 
-STATIC_ROOT = os.path.join(BASE_DIR,'bandmapV2/static')
+# STATIC_ROOT = os.path.join(BASE_DIR,'bandmapV2/static')
 
