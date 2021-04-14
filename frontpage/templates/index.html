@@ -3,12 +3,10 @@
 {% block content %}
 
 <div class='center white-text'>
-    <p>Welcome to CurationStation! This project is meant to help connect Spotify listeners to <a href='https://bandcamp.com'>Bandcamp</a> artists.
-    At this point in development, users can create/add to a Spotify playlist of their recent purchases on Bandcamp,
-    along with creating a list of Bandcamp links to purchase music from artists on your current Spotify playlists.</p>
-
-    <p>In the future, users will be able to create maps of Bandcamp artists and talk with other music lovers.</p>
-
+    <p>Welcome to CurationLab v0.1a! This project is meant to help people discover music outside of the Spotify algorithm, and make it easier to support artists directly 
+    on <a href='https://bandcamp.com'>Bandcamp</a>. After registering an account, you'll be able to edit your profile to provide your Bandcamp username (fan accounts), 
+    Spotify username, and your location. With these details, CurationLab can make a map of Bandcamp artists based on your location, create a Spotify playlist of your 
+    most recent Bandcamp purchases, and create a list of Bandcamp links to the artists in your current Spotify playlists.</p>
     <div class='row'>
         <a class='btn waves-red indigo accent-2' href={% url 'login' %}>LOGIN</a>
         <a class='btn waves-red indigo accent-2' href={% url 'register' %}>SIGNUP</a>

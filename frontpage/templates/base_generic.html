@@ -9,17 +9,17 @@
     <link rel="stylesheet" href="{% static '/css/materialize.css' %}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-    <title>CurationStation</title>
+    <title>CurationLab</title>
 </head>
 
 <body>
   <nav>
     <div class='nav-wraper'>
       <span class='brand-logo left' style='padding-left: 25px;'>
-        <a href={% url 'index' %} class='black-text'>CurationStation</a>
+        <a href={% url 'index' %} class='black-text'>CurationLab</a>
       </span>
       {% if request.user.is_authenticated %}
-      <ul id='nav-mobil' class='right hide-on-med-and-down'>
+      <ul id='nav-mobile' class='right hide-on-med-and-down'>
         <li style='padding-right: 25px;'>
           <a class='btn waves-effect indigo accent-2' href={% url 'logout' %}>
             Logout <i class='material-icons right'>exit_to_app</i>

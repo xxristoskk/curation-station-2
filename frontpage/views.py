@@ -3,11 +3,24 @@ from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
+from django.views import View
+
+# rest framework imports
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.views import APIView
 
 # app imports
-from frontpage.models import Map, Profile
-from frontpage.forms import CreateUserForm, MapForm, ProfileForm
-from frontpage.playlist_creator import MakePlaylist
+from frontpage.models import Profile
+from frontpage.forms import CreateUserForm, ProfileForm
+
+# needed for refreshing spotify auth tokens
+import time
+
+# handling spotify auth
+import spotipy
+from spotipy.cache_handler import CacheHandler
+from spotipy.oauth2 import SpotifyOAuth
 
 # initializing the database connection
 import pymongo
@@ -26,6 +39,33 @@ scope = 'playlist-modify-public'
 client_id = os.environ['SPOTIFY_ID']
 client_secret = os.environ['SPOTIFY_SECRET']
 redirect_uri = 'https://curation-station-2.herokuapp.com/redirect/'
+
+# spotipy defaults to storing cached tokens to a cache file
+# this class inherits from the base cache handler so tokens are saved to the profile model
+class CustomCacheHandler(CacheHandler):
+    def __init__(self, user):
+        self.user = user 
+    
+    def get_cached_token(self):
+        token_info = None
+        try:
+            token_info = {
+                'access_token': self.user.profile.spotify_token,
+                'expires_at': self.user.profile.token_exp,
+                'refresh_token': self.user.profile.spotify_refresh
+            }
+        except:
+            print('No token info')
+        return token_info
+    
+    def save_token_to_cache(self, token_info):
+        try:
+            self.user.profile.spotify_token = token_info['access_token']
+            self.user.profile.token_exp = token_info['expires_at']
+            self.user.profile.spotify_refresh = token_info['refresh_token']
+            self.user.profile.save(update_fields=['spotify_token','spotify_refresh','token_exp'])
+        except:
+            print("Couldn't save token info")
 
 ## user login & creation
 def register(request):
@@ -78,7 +118,8 @@ def profile(request):
         initial={
             'bandcamp_username': user.profile.bandcamp_username,
             'spotify_username': user.profile.spotify_username,
-            'sp_playlist_name': user.profile.sp_playlist_name
+            'sp_playlist_name': user.profile.sp_playlist_name,
+            'location': user.profile.location
         },
         instance=user)
     if request.method == 'POST':
@@ -102,63 +143,41 @@ def landingpage(request):
 def dashboard(request):
     token_exp = request.user.profile.token_exp
     sp_token = request.user.profile.spotify_token
+    refresh_token = request.user.profile.spotify_refresh
 
+    oauth = SpotifyOAuth(
+        client_id=client_id,
+        client_secret=client_secret,
+        redirect_uri=redirect_uri,
+        scope=scope,
+        cache_handler=CustomCacheHandler(request.user),
+        show_dialog=True
+    )
+
+    # check for spotify authorization and refresh token if needed
     now = int(time.time())
     if not token_exp or not sp_token:
         is_valid = False
-    elif sp_token or token_exp - now < 60:
+    elif token_exp - now > 60:
         is_valid = True
-    else:
-        is_valid = False
+    
+    if sp_token:
+        if token_exp - now < 60:
+            token_info = oauth.refresh_access_token(refresh_token)
+            new_token = token_info['access_token']
+            sp_token = new_token
+            refresh_token = token_info['refresh_token']
+            request.user.profile.save(update_fields=['spotify_token','spotify_refresh'])
 
     context = {'is_valid': is_valid}
     return render(request, 'dashboard.html', context=context)
 
+# import class to handle playlist creation
+from frontpage.playlist_creator import MakePlaylist
 
-''' Spotify auth & user experience '''
-# needed for refreshing tokens
-import time
-
-# handling spotify auth
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.views import APIView
-import spotipy
-from spotipy.cache_handler import CacheHandler
-from spotipy.oauth2 import SpotifyOAuth
-
-'''
-By default, Spotipy stores tokens in a system cache file. A custom class is needed to make sure Spotipy
-looks in the database for saved token information
-'''
-class CustomCacheHandler(CacheHandler):
-    def __init__(self, user):
-        self.user = user 
-    
-    def get_cached_token(self):
-        token_info = None
-        try:
-            token_info = {
-                'access_token': self.user.profile.spotify_token,
-                'expires_at': self.user.profile.token_exp,
-                'refresh_token': self.user.profile.spotify_refresh
-            }
-        except:
-            print('No token info')
-        return token_info
-    
-    def save_token_to_cache(self, token_info):
-        try:
-            self.user.profile.spotify_token = token_info['access_token']
-            self.user.profile.token_exp = token_info['expires_at']
-            self.user.profile.spotify_refresh = token_info['refresh_token']
-            self.user.profile.save(update_fields=['spotify_token','spotify_refresh','token_exp'])
-        except:
-            print("Couldn't save token info")
-
+# initialize spotify credentials
 class AuthURL(APIView):
     def get(self, request):
-        # initialize spotify credentials
         oauth = SpotifyOAuth(
             client_id=client_id,
             client_secret=client_secret,
@@ -166,27 +185,25 @@ class AuthURL(APIView):
             scope=scope,
             cache_handler=CustomCacheHandler(request.user),
             show_dialog=True
-        )    
+        )
         auth_url = oauth.get_authorize_url()
         return Response({'url': auth_url}, status=status.HTTP_200_OK)
 
 
 def callback(request):
     user = request.user
+    oauth = SpotifyOAuth(
+        client_id=client_id,
+        client_secret=client_secret,
+        redirect_uri=redirect_uri,
+        scope=scope,
+        cache_handler=CustomCacheHandler(request.user),
+        show_dialog=True
+    )
 
-    #check to see if the user has their profile filled
     if user.profile.spotify_username != '':
-        oauth = SpotifyOAuth(
-            client_id=client_id,
-            client_secret=client_secret,
-            redirect_uri=redirect_uri,
-            scope=scope,
-            cache_handler=CustomCacheHandler(request.user),
-            show_dialog=True
-        )    
         code = oauth.parse_response_code(request.build_absolute_uri())
         token_info = oauth.get_access_token(code)
-
         user.profile.spotify_token = token_info['access_token']
         user.profile.token_exp = token_info['expires_at']
         user.profile.spotify_refresh = token_info['refresh_token']
@@ -257,13 +274,16 @@ def buy_music(request):
     else:
         sp = spotipy.Spotify(auth=sp_token)
 
+    #get the first 5 user playlists
     user_playlists = [x['name'].lower() for x in sp.current_user_playlists()['items']]
     user_playlists = user_playlists[:5]
 
+    #get playlist ids
     playlist_ids = []
     for playlist in user_playlists:
         playlist_ids.append(sp.current_user_playlists()['items'][user_playlists.index(playlist)]['id'])
 
+    #get the list of artists
     artist_list = []
     for id_ in playlist_ids:
         pl = sp.playlist(id_)
@@ -271,6 +291,7 @@ def buy_music(request):
         artist_list.extend(artists)
     artist_list = set(artist_list)
 
+    #search the mongodb collection for artists
     bandcamp_info = []
     for artist in artist_list:
         doc = coll.find_one({'artist_name':artist.lower()})
@@ -279,24 +300,36 @@ def buy_music(request):
             bandcamp_info.append(doc)
         else:
             continue
+
     context = {'bc_info': bandcamp_info}
     return render(request, 'buy_music.html', context)
 
+import geojson
+from geojson import FeatureCollection, Point, Feature
 
-@login_required(login_url='login')
-def MapView(request):
-    user = request.user
-    form = MapForm(initial={
-        'country_region': user.profile.location
-    })
-    if request.method == 'POST':
-        form = MapForm(request.POST)
-        if form.is_valid():
-            form.save()
-    query = Map.objects.filter(country_region=request.POST.get('country_region')).values('latitude', 'longitude')
-    if query:
-        center = [list(query)[0]['longitude'],list(query)[0]['latitude']]
-        context = {'form': form, 'center': center}
-    else:
-        context = {'form': form}
-    return render(request, 'map.html', context=context)
+# import class to create geojson
+from frontpage.map_maker import MapMaker
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+class MapView(LoginRequiredMixin, View):
+    mapbox_token = os.environ['MAPBOX_TOKEN']
+    login_url = 'login'
+    redirect_field_name = 'redirect_to'
+    template_name = 'map.html'
+    
+    def get(self, request, *args, **kwargs):
+        lat = request.user.profile.latitude
+        lon = request.user.profile.longitude
+        location = request.user.profile.location
+        if ',' in location:
+            location = location.split(',')[1]
+        local_artists = coll.find({'latitude':{'$exists':True},'location':{'$regex':f'({location})'}})
+        user_map = MapMaker(local_artists)
+        points = user_map.point_properties()
+        context = {
+            'center': {'center': [lon,lat]},
+            'geo': user_map.make_geo_json(points),
+            'mapbox_token': {'token': self.mapbox_token}
+        }
+
+        return render(request, self.template_name, context)

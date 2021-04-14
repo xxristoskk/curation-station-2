@@ -3,20 +3,14 @@
 
 {% block content %}
 
-<style type='text/css'>
-.card {
-    max-width: 400px;
-    max-height: 700px;
-    position: relative;
-}
-</style>
+
 <div class='row'>
     <div class='col s12'>
         <h1 class='center-align' style='color: white;'>Hello, {{request.user}}!</h1>
         <div class='row'>
             <div class='col s12 center'>
                 {% for message in messages %}
-                    <span class='helper-text white-text' data-success='right'><h4>{{message}}</h4></span>
+                    <span class='helper-text indigo-text' data-success='right'><h5>{{message}}</h5></span>
                 {% endfor %}
             </div>
         </div>
@@ -25,81 +19,103 @@
 </div>
 
 <div class='container'>
+    <div class='section'>
 
-    <div class='row'>
-
-        <div class="col s6 center">
-            <div class="card grey darken-4">
-                <div class='card-content white-text'>
-                    <span class='card-title'><i class='medium material-icons' style='padding-top: 5px;'>account_circle</i></span>
-                    <p>Add Spotify and Bandcamp info</p>
-                </div>
-                <div class='card-action'>
-                    {% if request.user.profile.bandcamp_username == None and request.user.profile.spotify_username == None %}
-                        <a class="waves-effect waves-light btn pulse indigo accent-2" href={% url 'profile' %}>Edit Profile</a>
-                    {% else %}
-                        <a class="waves-effect waves-light btn indigo accent-2" href={% url 'profile' %}>Edit Profile</a>
-                    {% endif %}
+        <div class='row'>
+            <div class="col s12 center">
+                <div class='card grey darken-4'>
+                    <div class='card-content white-text'>
+                        <span class='card-title'><i class='medium material-icons'>map</i></span>
+                        <p>Create a map of Bandcamp artists based on your profile's location</p>
+                    </div>
+                    <div class='card-action'>
+                        {% if request.user.profile.location == None %}
+                            <a class="waves-effect waves-light btn disabled indigo accent-2" href={% url 'make-playlist' %}>Make Map</a>
+                        {% else %}
+                            <a class="waves-effect waves-light btn indigo accent-2" href={% url 'make-playlist' %}>Make Map</a>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="col s6 center">
-            <div class="card grey darken-4">
-                <div class='card-content white-text'>
-                    <span class='card-title'><i class='medium material-icons' style='padding-top: 5px;'>check</i></span>
-                    <p>Authorize CurationStation to use Spotify</p>
+        <div class='row'>
+            <div class="col l6 m2 center">
+                <div class="card small grey darken-4">
+                    <div class='card-content white-text'>
+                        <span class='card-title'><i class='medium material-icons'>account_circle</i></span>
+                        <p>This is where you will add location, Bandcamp, and Spotify details</p>
+                    </div>
+                    <div class='card-action'>
+                        {% if request.user.profile.bandcamp_username == None and request.user.profile.spotify_username == None and request.user.profile.location == None %}
+                            <a class="waves-effect waves-light btn pulse indigo accent-2" href={% url 'profile' %}>Edit Profile</a>
+                        {% else %}
+                            <a class="waves-effect waves-light btn indigo accent-2" href={% url 'profile' %}>Edit Profile</a>
+                        {% endif %}
+                    </div>
                 </div>
-                <div class='card-action'>
-                    {% if request.user.profile.spotify_username == None %}
-                        <button class="waves-effect waves-light btn disabled indigo accent-2" onclick="authSpotify()">Authorize</button>
-                    {% elif not is_valid %}
-                        <button class="waves-effect waves-light btn pulse indigo accent-2" onclick="authSpotify()">Authorize</button>
-                    {% elif is_valid %}
-                        <button class="waves-effect waves-light btn indigo accent-1" onclick="authSpotify()">Authorize</button>
-                    {% endif %}
+            </div>
+
+            <div class="col l6 m2 center">
+                <div class="card small grey darken-4">
+                    <div class='card-content white-text'>
+                        <span class='card-title'><i class='medium material-icons'>check</i></span>
+                        <p>Authorize CurationLab to access Spotify playlists if you'd like to use that feature</p>
+                    </div>
+                    <div class='card-action'>
+                        {% if request.user.profile.spotify_username == None %}
+                            <a class="waves-effect waves-light btn disabled indigo accent-2" onclick="authSpotify()">Authorize</a>
+                        {% elif not is_valid %}
+                            <a class="waves-effect waves-light btn pulse indigo accent-2" onclick="authSpotify()">Authorize</a>
+                        {% elif is_valid %}
+                            <a class="waves-effect waves-light btn disabled accent-1" onclick="authSpotify()">Authorized</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class='row'>
+            <div class="col l6 m2 center">
+                <div class='card small grey darken-4'>
+                    <div class='card-content white-text'>
+                        <span class='card-title'><img src="{% static 'imgs/Spotify_Icon_RGB_White.png' %}" style='max-width: 43px;'></span>
+                        <p>CurationLab can make a playlist of your recent Bandcamp purchases if the releases are on Spotify</p>
+                    </div>
+                    <div class='card-action'>
+                        {% if not is_valid or request.user.profile.bandcamp_username == None %}
+                            <a class="waves-effect waves-light btn disabled indigo accent-2" href={% url 'make-playlist' %}>Make Playlist</a>
+                        {% else %}
+                            <a class="waves-effect waves-light btn indigo accent-2" href={% url 'make-playlist' %}>Make Playlist</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class='col l6 m2 center'>
+                <div class='card small grey darken-4'>
+                    <div class='card-content white-text'>
+                        <span class='card-title'><i class='medium material-icons' >attach_money</i></span>
+                        <p>Make a list of Bandcamp links to artists that are on your spotify playlists</p>
+                    </div>
+                    <div class='card-action'>
+                        {% if not is_valid %}
+                            <a class="waves-effect waves-light btn disabled indigo accent-2" href={% url 'buy-music' %}>Make List</a>
+                        {% else %}
+                            <div class='card-action'><a class="waves-effect waves-light btn indigo accent-2" href={% url 'buy-music' %}>Make List</a></div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
 
-    </div>
-
-    <div class='row'>
-
-        <div class="col s6 center">
-            <div class='card grey darken-4'>
-                <div class='card-content white-text'>
-                    <span class='card-title'><img src="{% static 'imgs/Spotify_Icon_RGB_White.png' %}" style='max-width: 48px;'></span>
-                    <p>Create a playlist of recent Bandcamp purchases</p>
-                </div>
-                <div class='card-action'>
-                    {% if not is_valid or request.user.profile.bandcamp_username == None %}
-                        <a class="waves-effect waves-light btn disabled indigo accent-2" href={% url 'make-playlist' %}>Make Playlist</a>
-                    {% else %}
-                        <a class="waves-effect waves-light btn indigo accent-2" href={% url 'make-playlist' %}>Make Playlist</a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-
-        <div class='col s6 center'>
-            <div class='card grey darken-4'>
-                <div class='card-content white-text'>
-                    <span class='card-title'><i class='medium material-icons' style='padding-top: 5px;'>attach_money</i></span>
-                    <p>Buy music from artists on your Spotify playlists</p>
-                </div>
-                <div class='card-action'>
-                    {% if not is_valid %}
-                        <a class="waves-effect waves-light btn disabled indigo accent-2" href={% url 'buy-music' %}>Buy music</a>
-                    {% else %}
-                        <a class="waves-effect waves-light btn indigo accent-2" href={% url 'buy-music' %}>Buy Music</a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 
+<div class='row' style='padding-bottom: 20px;'>
+    <div class='col s12 divider indigo accent-1'></div>
+</div>
 
 <script>
 function authSpotify() {

@@ -1,37 +1,52 @@
-{% extends 'base_generic.html' %}
-{% block content %}
+{% load static %}
 
-<script src='https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js'></script>
-<link href='https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.css' rel='stylesheet' />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="{% static '/css/materialize.css' %}">
+    <link rel="stylesheet" href="{% static '/css/styles.css' %}">
+    <title>CurationLab - Maps</title>
+</head>
+<body>
 
-<div class='container'>
-    <div class='row' style='padding-top: 20px;'>
-        <div class='col s6 offset-s3 center'>
-            <form method='POST' action=''>
-                <div class='input-field'>
-                    {% csrf_token %}
-                    {{form.country_region}}
-                    <label class='active' for='map'>Map</label>
-                </div>
-                <button class="btn waves-effect waves-light indigo accent-2" type="submit" name="Make Map">
-                    Make Map
-                </button>
-            </div>
-        </div>
+  <nav style='background-color: black;'>
+    <div class='nav-wraper'>
+      <ul id='nav-mobile' class='right hide-on-med-and-down'>
+        <li style='padding-right: 25px;'>
+          <a class='btn waves-effect indigo accent-2' href={% url 'dashboard' %}>
+            Dashboard <i class='material-icons right'>exit_to_app</i>
+          </a>
+        </li>
+      </ul>
     </div>
-        <div class='col s4'>
-            <div id='map' style='width: 800px; height: 550px;'></div>
-        </div>
-    </div>
-</div>
+  </nav>
 
-<script>
-mapboxgl.accessToken = 'pk.eyJ1IjoieHJpc3Rvc2siLCJhIjoiY2s3cXdhMGR5MDgxdjNlbXZjaGdkczNkcCJ9.Fu-hNW-oYVvXmSxbmbVjQA';
-var map = new mapboxgl.Map({
-    container: 'map', // container ID
-    style: 'mapbox://styles/mapbox/streets-v11', // style URL
-    center: {{center}}, // starting position [lng, lat]
-    zoom: 9 // starting zoom
-});
-</script>
-{% endblock %}
+  <div id='sideFeats' class='sidebar'>
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    <ul id='artists' class='primary'>
+      
+    </div>
+  </div>
+
+  <div id='map-container'></div>
+
+  {{geo|json_script:'geojson'}}
+  {{center|json_script:'center'}}
+  {{mapbox_token|json_script:'token'}}
+
+  <!-- Load mapboxGL, jQuery, then our local javascript files -->
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.css" rel="stylesheet">
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.js"></script>
+  <script
+    src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+    crossorigin="anonymous"></script>
+  <script src="{% static 'js/map.js' %}"></script>
+
+</body>
+</html>
