@@ -137,8 +137,9 @@ def profile(request):
             if not location:
                 return redirect('dashboard')
             else:
-                latitude = loc.latitude
-                longitude = loc.longitude
+                user.profile.latitude = loc.latitude
+                user.profile.longitude = loc.longitude
+                user.profile.save(update_fields=['latitude','longitude'])
 
             messages.success(request, 'Profile updated')
             return redirect('dashboard')
