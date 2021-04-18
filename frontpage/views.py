@@ -134,11 +134,11 @@ def profile(request):
             geolocator = Nominatim(user_agent="CurationLab")
             loc = geolocator.geocode(location)
             
-            if not self.location:
+            if not location:
                 return redirect('dashboard')
             else:
-                self.latitude = loc.latitude
-                self.longitude = loc.longitude
+                latitude = loc.latitude
+                longitude = loc.longitude
 
             messages.success(request, 'Profile updated')
             return redirect('dashboard')
