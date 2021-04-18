@@ -135,7 +135,7 @@ def profile(request):
             loc = geolocator.geocode(location)
             
             if not self.location:
-                return None
+                return redirect('dashboard')
             else:
                 self.latitude = loc.latitude
                 self.longitude = loc.longitude
